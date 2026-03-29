@@ -6,7 +6,7 @@ struct RemoteDocumentRepository: DocumentRepository {
 
     init(
         session: URLSession = .shared,
-        configuration: APIConfiguration = .local
+        configuration: APIConfiguration = .current
     ) {
         self.session = session
         self.configuration = configuration
