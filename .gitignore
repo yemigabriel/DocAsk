@@ -1,0 +1,32 @@
+# Xcode user data
+xcuserdata/
+*.xcuserstate
+
+# Build products
+DerivedData/
+build/
+
+# Swift Package Manager
+.build/
+Packages/
+Package.resolved
+
+# CocoaPods / Carthage
+Pods/
+Carthage/Build/
+
+# Fastlane
+fastlane/report.xml
+fastlane/Preview.html
+fastlane/screenshots/
+fastlane/test_output/
+
+# macOS
+.DS_Store
+
+# Local secrets and overrides
+*.local.xcconfig
+Secrets.xcconfig
+
+# Xcode recovered references
+Recovered References/
