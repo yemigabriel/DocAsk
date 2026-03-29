@@ -1,36 +1,70 @@
-//
-//  DocAskTests.swift
-//  DocAskTests
-//
-//  Created by Yemi Gabriel on 27/03/2026.
-//
-
-import XCTest
+import Foundation
+import Testing
 @testable import DocAsk
 
-final class DocAskTests: XCTestCase {
+@MainActor
+struct DocAskTests {
+    @Test
+    func uploadSuccessTransitionsToChat() async throws {
+        let viewModel = DocAskViewModel(
+            importDocumentUseCase: MockImportDocumentUseCase(document: PDFDocument(fileName: "brief.pdf", data: Data("pdf".utf8))),
+            uploadDocumentUseCase: MockUploadDocumentUseCase(result: .success(DocumentUploadResult(message: "PDF ingested successfully."))),
+            askQuestionUseCase: MockAskQuestionUseCase(result: .success(QuestionAnswer(question: "Q", answer: "A", context: [], history: [])))
+        )
 
-    override func setUpWithError() throws {
-        // Put setup code here. This method is called before the invocation of each test method in the class.
+        viewModel.startUpload(for: PDFDocument(fileName: "brief.pdf", data: Data("pdf".utf8)))
+        try await Task.sleep(for: .seconds(0.8))
+
+        #expect(viewModel.currentScreen == .chat)
+        #expect(viewModel.progressStepIndex == 2)
+        #expect(viewModel.messages.last?.text.contains("brief.pdf") == true)
     }
 
-    override func tearDownWithError() throws {
-        // Put teardown code here. This method is called after the invocation of each test method in the class.
-    }
+    @Test
+    func submitQuestionAppendsBackendAnswer() async throws {
+        let viewModel = DocAskViewModel(
+            importDocumentUseCase: MockImportDocumentUseCase(document: PDFDocument(fileName: "brief.pdf", data: Data("pdf".utf8))),
+            uploadDocumentUseCase: MockUploadDocumentUseCase(result: .success(DocumentUploadResult(message: "PDF ingested successfully."))),
+            askQuestionUseCase: MockAskQuestionUseCase(result: .success(
+                QuestionAnswer(
+                    question: "What is this about?",
+                    answer: "This document is about portfolio architecture.",
+                    context: ["portfolio architecture"],
+                    history: []
+                )
+            ))
+        )
 
-    func testExample() throws {
-        // This is an example of a functional test case.
-        // Use XCTAssert and related functions to verify your tests produce the correct results.
-        // Any test you write for XCTest can be annotated as throws and async.
-        // Mark your test throws to produce an unexpected failure when your test encounters an uncaught error.
-        // Mark your test async to allow awaiting for asynchronous code to complete. Check the results with assertions afterwards.
-    }
+        viewModel.currentScreen = .chat
+        viewModel.draftQuestion = "What is this about?"
+        viewModel.submitQuestion()
+        try await Task.sleep(for: .seconds(0.1))
 
-    func testPerformanceExample() throws {
-        // This is an example of a performance test case.
-        self.measure {
-            // Put the code you want to measure the time of here.
-        }
+        #expect(viewModel.messages.last?.text == "This document is about portfolio architecture.")
+        #expect(viewModel.isAnswering == false)
     }
+}
 
+private struct MockImportDocumentUseCase: ImportDocumentUseCase {
+    let document: PDFDocument
+
+    func execute(fileURL: URL) throws -> PDFDocument {
+        document
+    }
+}
+
+private struct MockUploadDocumentUseCase: UploadDocumentUseCase {
+    let result: Result<DocumentUploadResult, Error>
+
+    func execute(document: PDFDocument) async throws -> DocumentUploadResult {
+        try result.get()
+    }
+}
+
+private struct MockAskQuestionUseCase: AskQuestionUseCase {
+    let result: Result<QuestionAnswer, Error>
+
+    func execute(question: String, history: [ConversationTurn]) async throws -> QuestionAnswer {
+        try result.get()
+    }
 }
