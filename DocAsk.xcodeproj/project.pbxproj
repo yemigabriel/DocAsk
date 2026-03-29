@@ -27,8 +27,8 @@
 		DC25F4922F76709A00432EFE /* DocAsk.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = DocAsk.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		DC25F49F2F76709E00432EFE /* DocAskTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = DocAskTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		DC25F4A92F76709E00432EFE /* DocAskUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = DocAskUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		E089A4CFB5D04FE2B5A566F5 /* Debug.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = DocAsk/Config/Debug.xcconfig; sourceTree = SOURCE_ROOT; };
-		E6A61DA83F574D5E8FE4D4F0 /* Release.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = DocAsk/Config/Release.xcconfig; sourceTree = SOURCE_ROOT; };
+		E089A4CFB5D04FE2B5A566F5 /* DocAsk/Config/Debug.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = DocAsk/Config/Debug.xcconfig; sourceTree = SOURCE_ROOT; };
+		E6A61DA83F574D5E8FE4D4F0 /* DocAsk/Config/Release.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = DocAsk/Config/Release.xcconfig; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -81,6 +81,7 @@
 				DC25F4A22F76709E00432EFE /* DocAskTests */,
 				DC25F4AC2F76709E00432EFE /* DocAskUITests */,
 				DC25F4932F76709A00432EFE /* Products */,
+				DC25F5712F7995DF00432EFE /* Recovered References */,
 			);
 			sourceTree = "<group>";
 		};
@@ -92,6 +93,15 @@
 				DC25F4A92F76709E00432EFE /* DocAskUITests.xctest */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		DC25F5712F7995DF00432EFE /* Recovered References */ = {
+			isa = PBXGroup;
+			children = (
+				E089A4CFB5D04FE2B5A566F5 /* DocAsk/Config/Debug.xcconfig */,
+				E6A61DA83F574D5E8FE4D4F0 /* DocAsk/Config/Release.xcconfig */,
+			);
+			name = "Recovered References";
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -394,7 +404,7 @@
 		};
 		DC25F4B42F76709E00432EFE /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = E089A4CFB5D04FE2B5A566F5 /* Debug.xcconfig */;
+			baseConfigurationReference = E089A4CFB5D04FE2B5A566F5 /* DocAsk/Config/Debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
@@ -423,7 +433,7 @@
 		};
 		DC25F4B52F76709E00432EFE /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = E6A61DA83F574D5E8FE4D4F0 /* Release.xcconfig */;
+			baseConfigurationReference = E6A61DA83F574D5E8FE4D4F0 /* DocAsk/Config/Release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
