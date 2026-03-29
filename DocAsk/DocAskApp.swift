@@ -9,9 +9,11 @@ import SwiftUI
 
 @main
 struct DocAskApp: App {
+    private let container = AppContainer()
+
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            ContentView(viewModel: container.makeDocAskViewModel())
         }
     }
 }
