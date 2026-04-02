@@ -1,7 +1,6 @@
 import SwiftUI
 
 struct WelcomeScreenView: View {
-    @Binding var progressMode: ProgressMode
     let onUploadTapped: () -> Void
 
     var body: some View {
@@ -34,13 +33,6 @@ struct WelcomeScreenView: View {
                 }
                 .buttonStyle(.borderedProminent)
                 .controlSize(.large)
-
-                Picker("Progress Style", selection: $progressMode) {
-                    ForEach(ProgressMode.allCases) { mode in
-                        Text(mode.title).tag(mode)
-                    }
-                }
-                .pickerStyle(.segmented)
             }
 
             Spacer()

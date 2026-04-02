@@ -31,12 +31,10 @@ struct ContentView: View {
                 switch viewModel.currentScreen {
                 case .welcome:
                     WelcomeScreenView(
-                        progressMode: $viewModel.progressMode,
                         onUploadTapped: viewModel.presentFileImporter
                     )
                 case .progress:
                     ProcessingScreenView(
-                        progressMode: viewModel.progressMode,
                         selectedFileName: viewModel.selectedFileName,
                         uploadStatusMessage: viewModel.uploadStatusMessage,
                         progressStepIndex: viewModel.progressStepIndex,

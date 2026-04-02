@@ -1,23 +1,20 @@
 import SwiftUI
 
 struct ProcessingScreenView: View {
-    let progressMode: ProgressMode
     let selectedFileName: String
     let uploadStatusMessage: String
     let progressStepIndex: Int
     let onCancelTapped: () -> Void
 
     var body: some View {
-        VStack(spacing: 24) {
+        VStack(alignment: .leading, spacing: 28) {
             Spacer()
 
-            VStack(spacing: 12) {
+            VStack(alignment: .leading, spacing: 12) {
                 Text("Preparing your document")
                     .font(.system(size: 32, weight: .bold, design: .rounded))
-                    .multilineTextAlignment(.center)
 
                 Text("DocAsk is uploading and processing the PDF on the backend.")
-                    .multilineTextAlignment(.center)
                     .foregroundStyle(.secondary)
 
                 if !selectedFileName.isEmpty {
@@ -27,44 +24,10 @@ struct ProcessingScreenView: View {
                 }
             }
 
-            if progressMode == .steps {
-                VStack(alignment: .leading, spacing: 16) {
-                    ForEach(Array(ProgressStep.allCases.enumerated()), id: \.offset) { index, step in
-                        HStack(spacing: 14) {
-                            Image(systemName: iconName(for: index))
-                                .foregroundStyle(iconColor(for: index))
-                                .frame(width: 24)
-
-                            VStack(alignment: .leading, spacing: 4) {
-                                Text(step.title)
-                                    .font(.headline)
-                                Text(detailText(for: step, index: index))
-                                    .font(.subheadline)
-                                    .foregroundStyle(.secondary)
-                            }
-
-                            Spacer()
-                        }
-                        .padding(16)
-                        .background(backgroundColor(for: index), in: RoundedRectangle(cornerRadius: 18, style: .continuous))
-                    }
+            VStack(alignment: .leading, spacing: 0) {
+                ForEach(Array(ProgressStep.allCases.enumerated()), id: \.offset) { index, step in
+                    timelineRow(for: step, index: index)
                 }
-            } else {
-                VStack(spacing: 16) {
-                    ProgressView()
-                        .controlSize(.large)
-                        .scaleEffect(1.5)
-
-                    Text(progressSummaryText)
-                        .font(.headline)
-
-                    Text(uploadStatusMessage)
-                        .multilineTextAlignment(.center)
-                        .foregroundStyle(.secondary)
-                }
-                .padding(32)
-                .frame(maxWidth: .infinity)
-                .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 24, style: .continuous))
             }
 
             Button("Cancel", role: .cancel, action: onCancelTapped)
@@ -76,17 +39,40 @@ struct ProcessingScreenView: View {
         .animation(.smooth, value: progressStepIndex)
     }
 
-    private var progressSummaryText: String {
-        switch progressStepIndex {
-        case 0:
-            return "Uploading document..."
-        case 1:
-            return "Analyzing document..."
-        case 2:
-            return "Ready to ask questions."
-        default:
-            return "Waiting to start..."
+    private func timelineRow(for step: ProgressStep, index: Int) -> some View {
+        HStack(alignment: .top, spacing: 18) {
+            VStack(spacing: 0) {
+                stepMarker(for: index)
+
+                if index < ProgressStep.allCases.count - 1 {
+                    Rectangle()
+                        .fill(connectorColor(for: index))
+                        .frame(width: 3)
+                        .frame(height: 72)
+                        .padding(.vertical, 8)
+                }
+            }
+            .frame(width: 52)
+
+            VStack(alignment: .leading, spacing: 6) {
+                Text(step.title)
+                    .font(.system(size: 18, weight: .semibold, design: .rounded))
+                    .foregroundStyle(titleColor(for: index))
+
+                Text(detailText(for: step, index: index))
+                    .font(.system(size: 17, weight: .regular, design: .rounded))
+                    .foregroundStyle(detailColor(for: index))
+            }
+            .padding(.horizontal, 18)
+            .padding(.vertical, 18)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .background(rowFill(for: index), in: RoundedRectangle(cornerRadius: 22, style: .continuous))
+            .overlay {
+                RoundedRectangle(cornerRadius: 22, style: .continuous)
+                    .stroke(rowStroke(for: index), lineWidth: index == progressStepIndex ? 1.2 : 0)
+            }
         }
+        .frame(minHeight: 112, alignment: .top)
     }
 
     private func detailText(for step: ProgressStep, index: Int) -> String {
@@ -97,33 +83,74 @@ struct ProcessingScreenView: View {
         return step.detail
     }
 
-    private func iconName(for index: Int) -> String {
-        if index < progressStepIndex {
-            return "checkmark.circle.fill"
-        } else if index == progressStepIndex {
-            return "clock.badge.checkmark.fill"
-        } else {
-            return "circle"
+    private func stepMarker(for index: Int) -> some View {
+        ZStack {
+            if index == progressStepIndex {
+                Circle()
+                    .stroke(Color.accentColor.opacity(0.24), lineWidth: 7)
+                    .frame(width: 42, height: 42)
+            }
+
+            Circle()
+                .fill(nodeFillColor(for: index))
+                .frame(width: 30, height: 30)
+
+            Circle()
+                .fill(nodeInnerColor(for: index))
+                .frame(width: 10, height: 10)
         }
+        .frame(width: 42, height: 42)
     }
 
-    private func iconColor(for index: Int) -> Color {
-        if index < progressStepIndex {
-            return .green
-        } else if index == progressStepIndex {
+    private func nodeFillColor(for index: Int) -> Color {
+        if index <= progressStepIndex {
             return .accentColor
         } else {
-            return .secondary
+            return Color(.systemBackground)
         }
     }
 
-    private func backgroundColor(for index: Int) -> Color {
-        if index < progressStepIndex {
-            return Color.green.opacity(0.12)
-        } else if index == progressStepIndex {
-            return Color.accentColor.opacity(0.12)
+    private func nodeInnerColor(for index: Int) -> Color {
+        if index <= progressStepIndex {
+            return .white
         } else {
-            return Color.secondary.opacity(0.08)
+            return Color.secondary.opacity(0.18)
+        }
+    }
+
+    private func connectorColor(for index: Int) -> Color {
+        if index < progressStepIndex {
+            return .accentColor
+        } else {
+            return Color.secondary.opacity(0.15)
+        }
+    }
+
+    private func rowFill(for index: Int) -> Color {
+        if index == progressStepIndex {
+            return Color(.systemBackground)
+        } else {
+            return .clear
+        }
+    }
+
+    private func rowStroke(for index: Int) -> Color {
+        Color.secondary.opacity(0.12)
+    }
+
+    private func titleColor(for index: Int) -> Color {
+        if index > progressStepIndex {
+            return Color.primary.opacity(0.28)
+        } else {
+            return .primary
+        }
+    }
+
+    private func detailColor(for index: Int) -> Color {
+        if index > progressStepIndex {
+            return Color.secondary.opacity(0.35)
+        } else {
+            return .secondary
         }
     }
 }

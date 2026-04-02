@@ -6,7 +6,6 @@ import SwiftUI
 @Observable
 final class DocAskViewModel {
     var currentScreen: AppScreen = .welcome
-    var progressMode: ProgressMode = .steps
     var progressStepIndex = 0
     var isShowingFileImporter = false
     var selectedFileName = ""
