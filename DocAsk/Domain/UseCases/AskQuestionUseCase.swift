@@ -2,6 +2,7 @@ import Foundation
 
 protocol AskQuestionUseCase {
     func execute(question: String, history: [ConversationTurn]) async throws -> QuestionAnswer
+    func executeStream(question: String, history: [ConversationTurn]) -> AsyncThrowingStream<StreamedQuestionAnswerEvent, Error>
 }
 
 struct DefaultAskQuestionUseCase: AskQuestionUseCase {
@@ -15,5 +16,9 @@ struct DefaultAskQuestionUseCase: AskQuestionUseCase {
 
     func execute(question: String, history: [ConversationTurn]) async throws -> QuestionAnswer {
         try await repository.ask(question: question, history: history, topK: topK)
+    }
+
+    func executeStream(question: String, history: [ConversationTurn]) -> AsyncThrowingStream<StreamedQuestionAnswerEvent, Error> {
+        repository.streamAnswer(question: question, history: history, topK: topK)
     }
 }

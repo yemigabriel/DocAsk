@@ -6,3 +6,8 @@ struct QuestionAnswer: Equatable, Sendable {
     let context: [String]
     let history: [ConversationTurn]
 }
+
+enum StreamedQuestionAnswerEvent: Equatable, Sendable {
+    case token(String)
+    case done(QuestionAnswer)
+}
