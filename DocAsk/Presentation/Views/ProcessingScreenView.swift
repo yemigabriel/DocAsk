@@ -14,6 +14,7 @@ struct ProcessingScreenView: View {
             VStack(spacing: 12) {
                 Text("Preparing your document")
                     .font(.system(size: 32, weight: .bold, design: .rounded))
+                    .multilineTextAlignment(.center)
 
                 Text("DocAsk is uploading and processing the PDF on the backend.")
                     .multilineTextAlignment(.center)
@@ -66,7 +67,7 @@ struct ProcessingScreenView: View {
                 .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 24, style: .continuous))
             }
 
-            Button("Cancel Upload", role: .cancel, action: onCancelTapped)
+            Button("Cancel", role: .cancel, action: onCancelTapped)
                 .buttonStyle(.bordered)
 
             Spacer()
