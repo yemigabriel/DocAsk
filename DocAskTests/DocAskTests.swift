@@ -8,8 +8,20 @@ struct DocAskTests {
     func uploadSuccessTransitionsToChat() async throws {
         let viewModel = DocAskViewModel(
             importDocumentUseCase: MockImportDocumentUseCase(document: PDFDocument(fileName: "brief.pdf", data: Data("pdf".utf8))),
-            uploadDocumentUseCase: MockUploadDocumentUseCase(result: .success(DocumentUploadResult(message: "PDF ingested successfully."))),
-            askQuestionUseCase: MockAskQuestionUseCase(result: .success(QuestionAnswer(question: "Q", answer: "A", context: [], history: [])))
+            uploadDocumentUseCase: MockUploadDocumentUseCase(result: .success(
+                DocumentUploadResult(jobID: "job-1", status: .uploaded, filename: "brief.pdf")
+            )),
+            getDocumentJobStatusUseCase: MockGetDocumentJobStatusUseCase(
+                results: [
+                    .success(DocumentJobStatus(jobID: "job-1", status: .analyzing, filename: "brief.pdf", error: nil)),
+                    .success(DocumentJobStatus(jobID: "job-1", status: .ready, filename: "brief.pdf", error: nil))
+                ]
+            ),
+            askQuestionUseCase: MockAskQuestionUseCase(
+                result: .success(QuestionAnswer(question: "Q", answer: "A", context: [], history: [])),
+                streamEvents: [.done(QuestionAnswer(question: "Q", answer: "A", context: [], history: []))]
+            ),
+            pollingInterval: .milliseconds(10)
         )
 
         viewModel.startUpload(for: PDFDocument(fileName: "brief.pdf", data: Data("pdf".utf8)))
@@ -24,7 +36,10 @@ struct DocAskTests {
     func submitQuestionAppendsBackendAnswer() async throws {
         let viewModel = DocAskViewModel(
             importDocumentUseCase: MockImportDocumentUseCase(document: PDFDocument(fileName: "brief.pdf", data: Data("pdf".utf8))),
-            uploadDocumentUseCase: MockUploadDocumentUseCase(result: .success(DocumentUploadResult(message: "PDF ingested successfully."))),
+            uploadDocumentUseCase: MockUploadDocumentUseCase(result: .success(
+                DocumentUploadResult(jobID: "job-1", status: .uploaded, filename: "brief.pdf")
+            )),
+            getDocumentJobStatusUseCase: MockGetDocumentJobStatusUseCase(results: []),
             askQuestionUseCase: MockAskQuestionUseCase(result: .success(
                 QuestionAnswer(
                     question: "What is this about?",
@@ -32,7 +47,18 @@ struct DocAskTests {
                     context: ["portfolio architecture"],
                     history: []
                 )
-            ))
+            ), streamEvents: [
+                .token("This document "),
+                .token("is about portfolio architecture."),
+                .done(
+                    QuestionAnswer(
+                        question: "What is this about?",
+                        answer: "This document is about portfolio architecture.",
+                        context: ["portfolio architecture"],
+                        history: []
+                    )
+                )
+            ])
         )
 
         viewModel.currentScreen = .chat
@@ -61,10 +87,41 @@ private struct MockUploadDocumentUseCase: UploadDocumentUseCase {
     }
 }
 
+private final class MockGetDocumentJobStatusUseCase: GetDocumentJobStatusUseCase {
+    private var results: [Result<DocumentJobStatus, Error>]
+
+    init(results: [Result<DocumentJobStatus, Error>]) {
+        self.results = results
+    }
+
+    func execute(jobID: String) async throws -> DocumentJobStatus {
+        guard !results.isEmpty else {
+            return DocumentJobStatus(jobID: jobID, status: .ready, filename: nil, error: nil)
+        }
+
+        return try results.removeFirst().get()
+    }
+}
+
 private struct MockAskQuestionUseCase: AskQuestionUseCase {
     let result: Result<QuestionAnswer, Error>
+    let streamEvents: [StreamedQuestionAnswerEvent]
+
+    init(result: Result<QuestionAnswer, Error>, streamEvents: [StreamedQuestionAnswerEvent] = []) {
+        self.result = result
+        self.streamEvents = streamEvents
+    }
 
     func execute(question: String, history: [ConversationTurn]) async throws -> QuestionAnswer {
         try result.get()
+    }
+
+    func executeStream(question: String, history: [ConversationTurn]) -> AsyncThrowingStream<StreamedQuestionAnswerEvent, Error> {
+        AsyncThrowingStream { continuation in
+            for event in streamEvents {
+                continuation.yield(event)
+            }
+            continuation.finish()
+        }
     }
 }
