@@ -13,6 +13,14 @@ struct APIConfiguration {
         baseURL.appending(path: "ask")
     }
 
+    var askStreamURL: URL {
+        baseURL.appending(path: "ask").appending(path: "stream")
+    }
+
+    func jobStatusURL(jobID: String) -> URL {
+        baseURL.appending(path: "jobs").appending(path: jobID)
+    }
+
     private static func resolvedBaseURL() -> URL {
         guard
             let value = Bundle.main.object(forInfoDictionaryKey: "APIBaseURL") as? String,
