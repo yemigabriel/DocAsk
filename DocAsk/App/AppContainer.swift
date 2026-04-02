@@ -9,6 +9,7 @@ struct AppContainer {
         return DocAskViewModel(
             importDocumentUseCase: DefaultImportDocumentUseCase(documentImporter: documentImporter),
             uploadDocumentUseCase: DefaultUploadDocumentUseCase(repository: documentRepository),
+            getDocumentJobStatusUseCase: DefaultGetDocumentJobStatusUseCase(repository: documentRepository),
             askQuestionUseCase: DefaultAskQuestionUseCase(repository: questionRepository)
         )
     }

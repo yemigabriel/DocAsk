@@ -7,6 +7,7 @@ enum DocAskError: LocalizedError, Equatable {
     case serverFailure(statusCode: Int, message: String)
     case decodingFailure
     case transportFailure(String)
+    case ingestionFailed(String)
 
     var errorDescription: String? {
         switch self {
@@ -25,6 +26,8 @@ enum DocAskError: LocalizedError, Equatable {
         case .decodingFailure:
             return "The app could not decode the server response."
         case .transportFailure(let message):
+            return message
+        case .ingestionFailed(let message):
             return message
         }
     }

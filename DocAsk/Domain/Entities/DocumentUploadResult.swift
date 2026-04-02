@@ -1,5 +1,7 @@
 import Foundation
 
 struct DocumentUploadResult: Equatable, Sendable {
-    let message: String
+    let jobID: String
+    let status: DocumentIngestionStatus
+    let filename: String
 }

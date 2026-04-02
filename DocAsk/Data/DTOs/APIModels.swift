@@ -1,10 +1,61 @@
 import Foundation
 
 struct UploadResponseDTO: Decodable, Equatable {
-    let message: String
+    let jobID: String
+    let status: JobStatusDTO
+    let filename: String
+
+    enum CodingKeys: String, CodingKey {
+        case jobID = "job_id"
+        case status
+        case filename
+    }
 
     func toDomain() -> DocumentUploadResult {
-        DocumentUploadResult(message: message)
+        DocumentUploadResult(jobID: jobID, status: status.toDomain(), filename: filename)
+    }
+}
+
+struct JobStatusResponseDTO: Decodable, Equatable {
+    let jobID: String
+    let status: JobStatusDTO
+    let filename: String?
+    let error: String?
+
+    enum CodingKeys: String, CodingKey {
+        case jobID = "job_id"
+        case status
+        case filename
+        case error
+    }
+
+    func toDomain() -> DocumentJobStatus {
+        DocumentJobStatus(
+            jobID: jobID,
+            status: status.toDomain(),
+            filename: filename,
+            error: error
+        )
+    }
+}
+
+enum JobStatusDTO: String, Decodable, Equatable {
+    case uploaded = "Uploaded document successfully"
+    case analyzing = "Analysing document"
+    case ready = "Document ready"
+    case failed = "Failed"
+
+    func toDomain() -> DocumentIngestionStatus {
+        switch self {
+        case .uploaded:
+            return .uploaded
+        case .analyzing:
+            return .analyzing
+        case .ready:
+            return .ready
+        case .failed:
+            return .failed
+        }
     }
 }
 
@@ -44,4 +95,10 @@ struct AskResponseDTO: Decodable, Equatable {
             }
         )
     }
+}
+
+struct StreamEventDTO: Decodable {
+    let type: String
+    let content: String?
+    let payload: AskResponseDTO?
 }
