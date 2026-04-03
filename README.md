@@ -5,6 +5,8 @@ DocAsk is an iOS app for uploading PDF documents and asking questions about thei
 
 ## Preview
 
+Screen recording: [Demo](https://github.com/user-attachments/assets/4a6211e0-9551-4cc1-837b-26c5bc5260d4)
+
 | Welcome | Progress | Chat |
 |---|---|---|
 | ![Welcome](https://github.com/user-attachments/assets/0c50b9ea-3bc4-4bc7-8e49-a8bb1c505a76) | ![Progress](https://github.com/user-attachments/assets/b642b0f7-0e42-441e-8d0b-9dbf803b19fa) | ![Chat](https://github.com/user-attachments/assets/5ac84650-b3a0-4dcc-b324-b4cbe12ed6c5) |
